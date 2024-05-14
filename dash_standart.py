@@ -1,7 +1,6 @@
 import plotly.express as px
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 #dataset
@@ -91,4 +90,4 @@ def update_graph(selected_product, selected_year_range, Region):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host= '0.0.0.0',port=8090,debug=True)
