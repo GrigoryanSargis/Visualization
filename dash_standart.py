@@ -3,6 +3,14 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import pandas as pd
+#dataset
+df = pd.read_csv('Supermart Grocery Sales - Retail Analytics Dataset.csv')
+
+df = df.drop(columns=['State'])
+df = df.drop(columns=['Order ID'])
+df['Order Date'] = pd.to_datetime(df['Order Date'],format="mixed")
+df = df.drop_duplicates()
 
 
 app = dash.Dash(__name__)
