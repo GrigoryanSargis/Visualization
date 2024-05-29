@@ -69,14 +69,14 @@ def welcome_page():
             html.H3("Data Overview"),
             html.Ul(
                 [
-                    html.Li("Grades: First period (G1), second period (G2), and final grade (G3)"),
-                    html.Li("Demographic Information: Age, sex, and address"),
-                    html.Li("Family Background: Parental education levels, family size, and status"),
-                    html.Li("Study Information: Study time, failures, and absences"),
-                    html.Li("Extra Activities: Participation in extracurricular activities, going out with friends, and health"),
+                    html.Li(""Sales: Total sales across different regions"),
+                    html.Li("Profit: Profit data for different items"),
+                    html.Li("Region: Sales data categorized by region"),
+                    html.Li("Category: Different product categories"),
+                    html.Li("Date: Sales data across different dates"),
                 ]
             ),
-            html.P('For more details, you can view the data [here](https://github.com/edvardghukasyan/DataVizProject/blob/main/student_data.csv).')
+            html.P('For more details, you can view the data [here](https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset).')
         ]
     )
 
@@ -84,7 +84,7 @@ def correlation_page():
     return html.Div(
         [
             html.H1("Correlation Analysis"),
-            # Add your correlation analysis content here
+            print('hell')
         ]
     )
 
@@ -92,7 +92,7 @@ def grades_page():
     return html.Div(
         [
             html.H1("Grades Distribution"),
-            # Add your grades distribution content here
+            print('hell')
         ]
     )
 
@@ -100,7 +100,7 @@ def pair_plots_page():
     return html.Div(
         [
             html.H1("Pair Plots"),
-            # Add your pair plots content here
+            print('hell')
         ]
     )
 
@@ -108,7 +108,7 @@ def ages_groups_page():
     return html.Div(
         [
             html.H1("Ages and Groups Analysis"),
-            # Add your ages and groups analysis content here
+            print('hell')
         ]
     )
 
