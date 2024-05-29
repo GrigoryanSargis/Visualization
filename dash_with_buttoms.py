@@ -112,5 +112,8 @@ def add_social_buttons(figure):
         html.A(html.Button('Share on Twitter', id='twitter-share-button'), href=twitter_url, target="_blank")
     ])
 
-if __name__ == '__main__':
-    app()
+# if __name__ == '__main__':
+#     app.run_server(host='0.0.0.0', port=8090, debug=True)
+
+# Expose the server variable for WSGI
+server = app.server
