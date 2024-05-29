@@ -23,6 +23,7 @@ sidebar = dbc.Col(
                 dbc.NavLink("Welcome", href="/", active="exact"),
                 dbc.NavLink("Profit Distribution by Region and City", href="/sunburst", active="exact"),
                 dbc.NavLink("Sales Distribution", href="/sales-distribution", active="exact"),
+                dbc.NavLink("Interactive Graphs", href="/interactive_graphs", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -59,6 +60,8 @@ def display_page(pathname):
         return sunburst_layout()
     elif pathname == "/sales-distribution":
         return sales_distribution_layout()
+    elif pathname == "/interactive_graphs":
+        return interactive_graphs_layout()
     else:
         return welcome_page()
 
@@ -105,6 +108,53 @@ def sales_distribution_layout():
             id='sales-distribution-graph',
             figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution By Region')
         )
+    ])
+def interactive_graphs_layout():
+    return dbc.Container([
+        dbc.Row([
+            dbc.Col([
+                html.Label('Select Product:', className='text-light'),
+                dcc.Dropdown(
+                    id='product-dropdown',
+                    options=[{'label': prod, 'value': prod} for prod in df['Category'].unique()],
+                    value=df['Category'].unique()[0],
+                    clearable=False,
+                    className='mb-3'
+                ),
+                html.Label('Select Region:', className='text-light'),
+                dcc.Dropdown(
+                    id='Region-dropdown',
+                    options=[{'label': region, 'value': region} for region in df['Region'].unique()],
+                    value=None,
+                    clearable=True,
+                    className='mb-3'
+                ),
+                html.Label('Select Year Range:', className='text-light'),
+                dcc.RangeSlider(
+                    id='year-slider',
+                    min=int(df['Order Date'].dt.year.min()),
+                    max=int(df['Order Date'].dt.year.max()),
+                    value=[int(df['Order Date'].dt.year.min()), int(df['Order Date'].dt.year.max())],
+                    marks={str(year): str(year) for year in range(int(df['Order Date'].dt.year.min()), int(df['Order Date'].dt.year.max()) + 1)},
+                    step=None,
+                    className='mb-3'
+                ),
+                dbc.Button('Update Graph', id='update-button', color='primary', className='mr-2'),
+                dbc.Button('Reset Filters', id='reset-button', color='secondary', className='ml-2')
+            ], width=4),
+
+            dbc.Col([
+                dcc.Graph(id='sales-graph')
+            ], width=8)
+        ], className='mb-4'),
+
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(id='bar-graph', figure=px.bar(df.groupby('Category')['Sales'].sum().reset_index(), x='Category', y='Sales', title='Top Selling Categories'))
+            ], width=12)
+        ]),
+
+        html.Div(id='social-buttons', className='text-center mt-4')
     ])
 
 # Expose the server
