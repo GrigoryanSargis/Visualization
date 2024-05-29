@@ -77,9 +77,11 @@ def welcome_page():
                     html.Li("Date: Sales data across different dates"),
                 ]
             ),
-            html.P('For more details, you can view the data [here](https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset).')
-        ]
-    )
+            html.P([
+            "For more details, you can view the data ",
+            html.A("here", href="https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset", target="_blank"),
+            "."
+])
 
 def correlation_page():
     return html.Div(
