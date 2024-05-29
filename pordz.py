@@ -23,6 +23,7 @@ sidebar = dbc.Col(
                 dbc.NavLink("Profit Distribution by Region and City", href="/sunburst", active="exact"),
                 dbc.NavLink("Sales Distribution", href="/sales-distribution", active="exact"),
                 dbc.NavLink("Interactive Graphs", href="/interactive_graphs", active="exact"),
+                dbc.NavLink("Goodbye", href="/goodbye", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -61,6 +62,8 @@ def display_page(pathname):
         return sales_distribution_layout()
     elif pathname == "/interactive_graphs":
         return interactive_graphs_layout()
+    elif pathname == "/goodbye":
+        return goodbye_page()
     else:
         return welcome_page()
 
@@ -156,6 +159,25 @@ def interactive_graphs_layout():
         html.Div(id='social-buttons', className='text-center mt-4')
     ])
 
+def goodbye_page():
+    share_url = "https://github.com/GrigoryanSargis/Visualization"  # Replace with your dashboard URL
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
+    twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this dashboard!"
+    
+    social_buttons = html.Div([
+        html.P("If you like this dashboard, you can share it!"),
+        html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
+        html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
+    ])
+
+    return html.Div(
+        [
+            html.H1("Goodbye!"),
+            html.P("Thank you for visiting the Student Performance Dashboard."),
+            social_buttons
+        ]
+    )
+
 # Callback for updating the sales graph
 @app.callback(
     Output('sales-graph', 'figure'),
@@ -178,10 +200,8 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'reset-button':
-        return {'data': [], 'layout': {}}
-    else:
-        return {'data': [], 'layout': {}}
-        
+        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+
     # Filter dataframe based on user selections
     filtered_df = df.copy()
 
@@ -199,21 +219,6 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
 
     fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
     return fig
-
-# Callback for adding social media buttons
-@app.callback(
-    Output('social-buttons', 'children'),
-    [Input('sales-graph', 'figure')]
-)
-def add_social_buttons(figure):
-    share_url = "https://github.com/GrigoryanSargis/Visualization"  # Replace with your dashboard URL
-    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
-    twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this dashboard!"
-
-    return html.Div([
-        html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
-        html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
-    ])
 
 # Expose the server
 server = app.server
