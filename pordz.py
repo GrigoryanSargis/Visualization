@@ -178,8 +178,8 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'reset-button':
-        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time')
-
+        return px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+        
     # Filter dataframe based on user selections
     filtered_df = df.copy()
 
@@ -195,7 +195,7 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
             (filtered_df['Order Date'].dt.year <= selected_years[1])
         ]
 
-    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time')
+    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
     return fig
 
 # Callback for adding social media buttons
