@@ -58,7 +58,7 @@ def display_page(pathname):
     if pathname == "/correlation-analysis":
         return correlation_page()
     elif pathname == "/sales-distribution":
-        return sales_distribution_layout
+        return sales_distribution_layout()
     else:
         return welcome_page()
 
@@ -107,10 +107,10 @@ def correlation_page():
 
 def sales_distribution_layout():
     return dbc.Container([
-        html.H1("Sales Distribution per Region"),
+        html.H1("Sales Distribution By Region"),
         dcc.Graph(
             id='sales-distribution-graph',
-            figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution per Region')
+            figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution By Region')
         )
     ])
 
