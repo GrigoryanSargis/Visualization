@@ -1,119 +1,226 @@
-import plotly.express as px
 import dash
-from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash import dcc, html, Input, Output, State
+import dash_bootstrap_components as dbc
+import plotly.express as px
 import pandas as pd
 
-# Load dataset
+# Sample DataFrame for demonstration
 df = pd.read_csv('Supermart Grocery Sales - Retail Analytics Dataset.csv')
 df = df.drop(columns=['State', 'Order ID'])
 df['Order Date'] = pd.to_datetime(df['Order Date'], format="mixed")
 df = df.drop_duplicates()
 
-# Initialize Dash app
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# Create figures
-fig_sales_over_time = px.sunburst(df, path=['Region', 'City'], values='Profit', color='Profit')
-fig_top_selling_categories = px.bar(df.groupby('Category')['Sales'].sum().reset_index(), x='Category', y='Sales')
-fig_sales_by_region = px.pie(df.groupby('Region')['Sales'].sum().reset_index(), values='Sales', names='Region')
+# Define the sidebar
+sidebar = dbc.Col(
+    [
+        html.H2("Navigation", className="display-4"),
+        html.Hr(),
+        dbc.Nav(
+            [
+                dbc.NavLink("Welcome", href="/", active="exact"),
+                dbc.NavLink("Profit Distribution by Region and City", href="/sunburst", active="exact"),
+                dbc.NavLink("Sales Distribution", href="/sales-distribution", active="exact"),
+                dbc.NavLink("Interactive Graphs", href="/interactive_graphs", active="exact"),
+                dbc.NavLink("Goodbye", href="/goodbye", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    md=2,
+)
 
-# Define layout
-app.layout = html.Div(children=[
-    html.H1(children='Supermart Grocery Sales Dashboard'),
-    dcc.Graph(id='sales-graph'),
-    html.Br(),
-    html.Label('Select Product:'),
-    dcc.Dropdown(
-        id='product-dropdown',
-        options=[{'label': prod, 'value': prod} for prod in df['Category'].unique()],
-        value=df['Category'].unique()[0],
-        clearable=False
-    ),
-    html.Br(),
-    html.Label('Select Region:'),
-    dcc.Dropdown(
-        id='Region-dropdown',
-        options=[{'label': reg, 'value': reg} for reg in df['Region'].unique()],
-        value=None,
-        clearable=True
-    ),
-    html.Br(),
-    html.Label('Select Year Range:'),
-    dcc.RangeSlider(
-        id='year-slider',
-        min=df['Order Date'].dt.year.min(),
-        max=df['Order Date'].dt.year.max(),
-        value=[df['Order Date'].dt.year.min(), df['Order Date'].dt.year.max()],
-        marks={str(year): str(year) for year in range(df['Order Date'].dt.year.min(), df['Order Date'].dt.year.max() + 1)},
-        step=None
-    ),
-    html.Button('Update Graph', id='update-button', n_clicks=0),
-    html.Button('Reset Filters', id='reset-button', n_clicks=0),
-    dcc.Graph(id='sunburst-graph', figure=fig_sales_over_time),
-    dcc.Graph(id='bar-graph', figure=fig_top_selling_categories),
-    dcc.Graph(id='pie-graph', figure=fig_sales_by_region),
-    html.Div(id='social-buttons')
-])
+# Define the content for each page
+content = dbc.Col(
+    id="page-content",
+    md=10
+)
 
-# Define callbacks
+# Define the layout
+app.layout = dbc.Container(
+    [
+        dcc.Location(id='url', refresh=False),
+        dbc.Row(
+            [
+                sidebar,
+                content
+            ],
+        ),
+    ],
+    fluid=True,
+)
+
+# Define the callbacks to update the page content based on the URL
+@app.callback(Output("page-content", "children"),
+              [Input("url", "pathname")])
+def display_page(pathname):
+    if pathname == "/sunburst":
+        return sunburst_layout()
+    elif pathname == "/sales-distribution":
+        return sales_distribution_layout()
+    elif pathname == "/interactive_graphs":
+        return interactive_graphs_layout()
+    elif pathname == "/goodbye":
+        return goodbye_page()
+    else:
+        return welcome_page()
+
+def welcome_page():
+    return html.Div(
+        [
+            html.H1("Welcome to the Supermart Grocery Sales Dashboard"),
+            html.P("""
+            This dashboard provides an analysis of student performance data.
+            Use the navigation sidebar to explore different aspects of the data.
+            """),
+            html.H3("Data Overview"),
+            html.Ul(
+                [
+                    html.Li("Sales: Total sales across different regions"),
+                    html.Li("Profit: Profit data for different items"),
+                    html.Li("Region: Sales data categorized by region"),
+                    html.Li("Category: Different product categories"),
+                    html.Li("Date: Sales data across different dates"),
+                ]
+            ),
+            html.P([
+                "For more details, you can view the data ",
+                html.A("here", href="https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset", target="_blank"),
+                "."
+            ])
+        ]
+    )
+
+def sunburst_layout():
+    return dbc.Container([
+        html.H1("Profit Distribution by Region and City", className="text-light"),
+        dcc.Graph(
+            id='sunburst-graph-page',
+            figure=px.sunburst(df, path=['Region', 'City'], values='Profit', color='Profit', title='Profit Distribution by Region and City')
+        )
+    ])
+
+def sales_distribution_layout():
+    return dbc.Container([
+        html.H1("Sales Distribution By Region"),
+        dcc.Graph(
+            id='sales-distribution-graph',
+            figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution By Region')
+        )
+    ])
+
+def interactive_graphs_layout():
+    return dbc.Container([
+        dbc.Row([
+            dbc.Col([
+                html.Label('Select Product:', className='text-light'),
+                dcc.Dropdown(
+                    id='product-dropdown',
+                    options=[{'label': prod, 'value': prod} for prod in df['Category'].unique()],
+                    value=df['Category'].unique()[0],
+                    clearable=False,
+                    className='mb-3'
+                ),
+                html.Label('Select Region:', className='text-light'),
+                dcc.Dropdown(
+                    id='region-dropdown',
+                    options=[{'label': region, 'value': region} for region in df['Region'].unique()],
+                    value=None,
+                    clearable=True,
+                    className='mb-3'
+                ),
+                html.Label('Select Year Range:', className='text-light'),
+                dcc.RangeSlider(
+                    id='year-slider',
+                    min=int(df['Order Date'].dt.year.min()),
+                    max=int(df['Order Date'].dt.year.max()),
+                    value=[int(df['Order Date'].dt.year.min()), int(df['Order Date'].dt.year.max())],
+                    marks={str(year): str(year) for year in range(int(df['Order Date'].dt.year.min()), int(df['Order Date'].dt.year.max()) + 1)},
+                    step=None,
+                    className='mb-3'
+                ),
+                dbc.Button('Update Graph', id='update-button', color='primary', className='mr-2'),
+                dbc.Button('Reset Filters', id='reset-button', color='secondary', className='ml-2')
+            ], width=4),
+
+            dbc.Col([
+                dcc.Graph(id='sales-graph')
+            ], width=8)
+        ], className='mb-4'),
+
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(id='bar-graph', figure=px.bar(df.groupby('Category')['Sales'].sum().reset_index(), x='Category', y='Sales', title='Top Selling Categories'))
+            ], width=12)
+        ]),
+
+        html.Div(id='social-buttons', className='text-center mt-4')
+    ])
+
+def goodbye_page():
+    share_url = "https://github.com/GrigoryanSargis/Visualization"  
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
+    twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this dashboard!"
+    
+    social_buttons = html.Div([
+        html.P("If you like this dashboard, you can share it!"),
+        html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
+        html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
+    ])
+    gif_url = "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif"  # Replace with your desired GIF URL
+
+    return html.Div(
+        [
+            html.H1("Goodbye!"),
+            html.P("Thank you for visiting the Supermart Grocery Sales."),
+            html.Img(src=gif_url, style={'width': '50%'}),
+            social_buttons
+        ]
+    )
+
+# Callback for updating the sales graph
 @app.callback(
     Output('sales-graph', 'figure'),
-    [Input('update-button', 'n_clicks'),
-     Input('reset-button', 'n_clicks')],
-    [State('product-dropdown', 'value'),
-     State('year-slider', 'value'),
-     State('Region-dropdown', 'value')]
+    [
+        Input('update-button', 'n_clicks'),
+        Input('reset-button', 'n_clicks')
+    ],
+    [
+        State('product-dropdown', 'value'),
+        State('region-dropdown', 'value'),
+        State('year-slider', 'value')
+    ]
 )
-def update_graph(update_clicks, reset_clicks, selected_product, selected_year_range, Region):
+def update_graph(update_clicks, reset_clicks, selected_product, selected_region, selected_years):
     ctx = dash.callback_context
 
     if not ctx.triggered:
-        button_id = None
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        raise dash.exceptions.PreventUpdate
 
-    if button_id == 'update-button':
-        filtered_df = df[(df['Category'] == selected_product) &
-                         (df['Order Date'].dt.year >= selected_year_range[0]) &
-                         (df['Order Date'].dt.year <= selected_year_range[1])]
-        if Region:
-            filtered_df = filtered_df[filtered_df['Region'] == Region]
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-        return {
-            'data': [{
-                'x': filtered_df['Order Date'],
-                'y': filtered_df['Sales'],
-                'type': 'bar',
-                'name': 'Sales'
-            }],
-            'layout': {
-                'title': f'Sales of Product {selected_product}',
-                'xaxis': {'title': 'Order Date'},
-                'yaxis': {'title': 'Sales'}
-            }
-        }
-    elif button_id == 'reset-button':
-        return {'data': [], 'layout': {}}
-    else:
-        return {'data': [], 'layout': {}}
+    if triggered_id == 'reset-button':
+        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
 
-@app.callback(
-    Output('social-buttons', 'children'),
-    [Input('sales-graph', 'figure')]
-)
-def add_social_buttons(figure):
-    share_url = "https://github.com/GrigoryanSargis/Visualization"
-    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
-    twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this notebook!"
+    # Filter dataframe based on user selections
+    filtered_df = df.copy()
 
-    return html.Div([
-        html.A(html.Button('Share on Facebook', id='facebook-share-button'), href=facebook_url, target="_blank"),
-        html.A(html.Button('Share on Twitter', id='twitter-share-button'), href=twitter_url, target="_blank")
-    ])
+    if selected_product:
+        filtered_df = filtered_df[filtered_df['Category'] == selected_product]
 
-# if __name__ == '__main__':
-#     app.run_server(host='0.0.0.0', port=8090, debug=True)
+    if selected_region:
+        filtered_df = filtered_df[filtered_df['Region'] == selected_region]
 
-# Expose the server variable for WSGI
+    if selected_years:
+        filtered_df = filtered_df[
+            (filtered_df['Order Date'].dt.year >= selected_years[0]) &
+            (filtered_df['Order Date'].dt.year <= selected_years[1])
+        ]
+
+    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+    return fig
+
+# Expose the server
 server = app.server
