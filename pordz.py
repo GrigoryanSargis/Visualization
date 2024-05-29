@@ -78,10 +78,12 @@ def welcome_page():
                 ]
             ),
             html.P([
-            "For more details, you can view the data ",
-            html.A("here", href="https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset", target="_blank"),
-            "."
-])
+                "For more details, you can view the data ",
+                html.A("here", href="https://www.kaggle.com/mohamedharris/supermart-grocery-sales-retail-analytics-dataset", target="_blank"),
+                "."
+            ])
+        ]
+    )
 
 def correlation_page():
     return html.Div(
