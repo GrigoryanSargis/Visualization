@@ -69,7 +69,7 @@ def welcome_page():
             html.H3("Data Overview"),
             html.Ul(
                 [
-                    html.Li(""Sales: Total sales across different regions"),
+                    html.Li("Sales: Total sales across different regions"),
                     html.Li("Profit: Profit data for different items"),
                     html.Li("Region: Sales data categorized by region"),
                     html.Li("Category: Different product categories"),
