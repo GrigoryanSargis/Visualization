@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
@@ -99,7 +99,6 @@ def sunburst_layout():
         )
     ])
 
-
 def sales_distribution_layout():
     return dbc.Container([
         html.H1("Sales Distribution By Region"),
@@ -108,6 +107,7 @@ def sales_distribution_layout():
             figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution By Region')
         )
     ])
+
 def interactive_graphs_layout():
     return dbc.Container([
         dbc.Row([
@@ -122,7 +122,7 @@ def interactive_graphs_layout():
                 ),
                 html.Label('Select Region:', className='text-light'),
                 dcc.Dropdown(
-                    id='Region-dropdown',
+                    id='region-dropdown',
                     options=[{'label': region, 'value': region} for region in df['Region'].unique()],
                     value=None,
                     clearable=True,
@@ -156,6 +156,47 @@ def interactive_graphs_layout():
         html.Div(id='social-buttons', className='text-center mt-4')
     ])
 
+# Callback for updating the sales graph
+@app.callback(
+    Output('sales-graph', 'figure'),
+    [
+        Input('update-button', 'n_clicks'),
+        Input('reset-button', 'n_clicks')
+    ],
+    [
+        State('product-dropdown', 'value'),
+        State('region-dropdown', 'value'),
+        State('year-slider', 'value')
+    ]
+)
+def update_graph(update_clicks, reset_clicks, selected_product, selected_region, selected_years):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        raise dash.exceptions.PreventUpdate
+
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if triggered_id == 'reset-button':
+        return px.line(df, x='Order Date', y='Sales', title='Sales Over Time')
+
+    # Filter dataframe based on user selections
+    filtered_df = df.copy()
+
+    if selected_product:
+        filtered_df = filtered_df[filtered_df['Category'] == selected_product]
+
+    if selected_region:
+        filtered_df = filtered_df[filtered_df['Region'] == selected_region]
+
+    if selected_years:
+        filtered_df = filtered_df[
+            (filtered_df['Order Date'].dt.year >= selected_years[0]) &
+            (filtered_df['Order Date'].dt.year <= selected_years[1])
+        ]
+
+    fig = px.line(filtered_df, x='Order Date', y='Sales', title='Sales Over Time')
+    return fig
+
 # Expose the server
 server = app.server
-
