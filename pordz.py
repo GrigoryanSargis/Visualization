@@ -214,10 +214,14 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_year_ra
         return fig
 
     elif button_id == 'reset-button':
-        return {'data': [], 'layout': {}}
+        fig = px.bar(pd.DataFrame(columns=['Order Date', 'Sales']), x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
+        return fig
 
     else:
-        return {'data': [], 'layout': {}}
+        fig = px.bar(pd.DataFrame(columns=['Order Date', 'Sales']), x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
+        return fig
 
 # Expose the server
 server = app.server
