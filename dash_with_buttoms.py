@@ -1,25 +1,24 @@
 import plotly.express as px
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output,State
+from dash.dependencies import Input, Output, State
 import pandas as pd
-#dataset
-df = pd.read_csv('Supermart Grocery Sales - Retail Analytics Dataset.csv')
 
-df = df.drop(columns=['State'])
-df = df.drop(columns=['Order ID'])
-df['Order Date'] = pd.to_datetime(df['Order Date'],format="mixed")
+# Load dataset
+df = pd.read_csv('Supermart Grocery Sales - Retail Analytics Dataset.csv')
+df = df.drop(columns=['State', 'Order ID'])
+df['Order Date'] = pd.to_datetime(df['Order Date'], format="mixed")
 df = df.drop_duplicates()
 
+# Initialize Dash app
 app = dash.Dash(__name__)
 
-
+# Create figures
 fig_sales_over_time = px.sunburst(df, path=['Region', 'City'], values='Profit', color='Profit')
-
 fig_top_selling_categories = px.bar(df.groupby('Category')['Sales'].sum().reset_index(), x='Category', y='Sales')
-
 fig_sales_by_region = px.pie(df.groupby('Region')['Sales'].sum().reset_index(), values='Sales', names='Region')
 
+# Define layout
 app.layout = html.Div(children=[
     html.H1(children='Supermart Grocery Sales Dashboard'),
     dcc.Graph(id='sales-graph'),
@@ -35,7 +34,7 @@ app.layout = html.Div(children=[
     html.Label('Select Region:'),
     dcc.Dropdown(
         id='Region-dropdown',
-        options=[{'label': prod, 'value': prod} for prod in df['Region'].unique()],
+        options=[{'label': reg, 'value': reg} for reg in df['Region'].unique()],
         value=None,
         clearable=True
     ),
@@ -57,6 +56,7 @@ app.layout = html.Div(children=[
     html.Div(id='social-buttons')
 ])
 
+# Define callbacks
 @app.callback(
     Output('sales-graph', 'figure'),
     [Input('update-button', 'n_clicks'),
@@ -74,15 +74,11 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_year_ra
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if button_id == 'update-button':
-        if Region is None:
-            filtered_df = df[(df['Category'] == selected_product) &
-                             (df['Order Date'].dt.year >= selected_year_range[0]) &
-                             (df['Order Date'].dt.year <= selected_year_range[1])]
-        else:
-            filtered_df = df[(df['Category'] == selected_product) &
-                             (df['Order Date'].dt.year >= selected_year_range[0]) &
-                             (df['Order Date'].dt.year <= selected_year_range[1]) &
-                             (df['Region'] == Region)]
+        filtered_df = df[(df['Category'] == selected_product) &
+                         (df['Order Date'].dt.year >= selected_year_range[0]) &
+                         (df['Order Date'].dt.year <= selected_year_range[1])]
+        if Region:
+            filtered_df = filtered_df[filtered_df['Region'] == Region]
 
         return {
             'data': [{
@@ -98,24 +94,16 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_year_ra
             }
         }
     elif button_id == 'reset-button':
-        # Reset all filters to default values
-        return {
-            'data': [],
-            'layout': {}
-        }
+        return {'data': [], 'layout': {}}
     else:
-        # No button click, return empty graph
-        return {
-            'data': [],
-            'layout': {}
-        }
+        return {'data': [], 'layout': {}}
 
 @app.callback(
     Output('social-buttons', 'children'),
     [Input('sales-graph', 'figure')]
 )
 def add_social_buttons(figure):
-    share_url = "https://github.com/GrigoryanSargis/Visualization"  # Replace with your dashboard URL
+    share_url = "https://github.com/GrigoryanSargis/Visualization"
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
     twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this notebook!"
 
@@ -124,7 +112,5 @@ def add_social_buttons(figure):
         html.A(html.Button('Share on Twitter', id='twitter-share-button'), href=twitter_url, target="_blank")
     ])
 
-
-
 if __name__ == '__main__':
-    app.run_server(host= '0.0.0.0',port=8090,debug=True)
+    app.run_server(host='0.0.0.0', port=8090, debug=True)
