@@ -21,7 +21,7 @@ sidebar = dbc.Col(
         dbc.Nav(
             [
                 dbc.NavLink("Welcome", href="/", active="exact"),
-                dbc.NavLink("Correlation Analysis", href="/correlation-analysis", active="exact"),
+                dbc.NavLink("Profit Distribution by Region and City", href="/sunburst", active="exact"),
                 dbc.NavLink("Sales Distribution", href="/sales-distribution", active="exact"),
             ],
             vertical=True,
@@ -55,8 +55,8 @@ app.layout = dbc.Container(
 @app.callback(Output("page-content", "children"),
               [Input("url", "pathname")])
 def display_page(pathname):
-    if pathname == "/correlation-analysis":
-        return correlation_page()
+    if pathname == "/sunburst":
+        return sunburst_layout()
     elif pathname == "/sales-distribution":
         return sales_distribution_layout()
     else:
@@ -88,22 +88,15 @@ def welcome_page():
         ]
     )
 
-def correlation_page():
-    return html.Div(
-        [
-            html.H1("Correlation Analysis"),
-            html.P("""
-            In this section, we analyze the correlations between different variables in the dataset.
-            Correlation analysis helps in understanding the relationships between different factors,
-            such as how sales and profit are related across different regions and categories.
-            """),
-            html.P("""
-            Understanding these relationships can help in making data-driven decisions, such as
-            identifying key drivers of profit and optimizing strategies accordingly.
-            """)
-            # Add more detailed correlation analysis content here
-        ]
-    )
+def sunburst_layout():
+    return dbc.Container([
+        html.H1("Profit Distribution by Region and City", className="text-light"),
+        dcc.Graph(
+            id='sunburst-graph-page',
+            figure=px.sunburst(df, path=['Region', 'City'], values='Profit', color='Profit', title='Profit Distribution by Region and City')
+        )
+    ])
+
 
 def sales_distribution_layout():
     return dbc.Container([
