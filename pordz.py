@@ -5,11 +5,10 @@ import plotly.express as px
 import pandas as pd
 
 # Sample DataFrame for demonstration
-data = {
-    'Region': ['East', 'West', 'South', 'North'],
-    'Sales': [2345, 5678, 1234, 4321]
-}
-df = pd.DataFrame(data)
+df = pd.read_csv('Supermart Grocery Sales - Retail Analytics Dataset.csv')
+df = df.drop(columns=['State', 'Order ID'])
+df['Order Date'] = pd.to_datetime(df['Order Date'], format="mixed")
+df = df.drop_duplicates()
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
