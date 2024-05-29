@@ -84,31 +84,67 @@ def correlation_page():
     return html.Div(
         [
             html.H1("Correlation Analysis"),
-            print('hell')
+            html.P("""
+            In this section, we analyze the correlations between different variables in the dataset.
+            Correlation analysis helps in understanding the relationships between different factors,
+            such as how sales and profit are related across different regions and categories.
+            """),
+            html.P("""
+            Understanding these relationships can help in making data-driven decisions, such as
+            identifying key drivers of profit and optimizing strategies accordingly.
+            """)
+            # Add more detailed correlation analysis content here
         ]
     )
 
 def grades_page():
     return html.Div(
         [
-            html.H1("Grades Distribution"),
-            print('hell')
+            html.H1("Correlation Analysis"),
+            html.P("""
+            In this section, we analyze the correlations between different variables in the dataset.
+            Correlation analysis helps in understanding the relationships between different factors,
+            such as how sales and profit are related across different regions and categories.
+            """),
+            html.P("""
+            Understanding these relationships can help in making data-driven decisions, such as
+            identifying key drivers of profit and optimizing strategies accordingly.
+            """)
+            # Add more detailed correlation analysis content here
         ]
     )
 
 def pair_plots_page():
     return html.Div(
         [
-            html.H1("Pair Plots"),
-            print('hell')
+            html.H1("Correlation Analysis"),
+            html.P("""
+            In this section, we analyze the correlations between different variables in the dataset.
+            Correlation analysis helps in understanding the relationships between different factors,
+            such as how sales and profit are related across different regions and categories.
+            """),
+            html.P("""
+            Understanding these relationships can help in making data-driven decisions, such as
+            identifying key drivers of profit and optimizing strategies accordingly.
+            """)
+            # Add more detailed correlation analysis content here
         ]
     )
 
 def ages_groups_page():
     return html.Div(
         [
-            html.H1("Ages and Groups Analysis"),
-            print('hell')
+            html.H1("Correlation Analysis"),
+            html.P("""
+            In this section, we analyze the correlations between different variables in the dataset.
+            Correlation analysis helps in understanding the relationships between different factors,
+            such as how sales and profit are related across different regions and categories.
+            """),
+            html.P("""
+            Understanding these relationships can help in making data-driven decisions, such as
+            identifying key drivers of profit and optimizing strategies accordingly.
+            """)
+            # Add more detailed correlation analysis content here
         ]
     )
 
