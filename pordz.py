@@ -193,35 +193,34 @@ def goodbye_page():
         State('year-slider', 'value')
     ]
 )
-def update_graph(update_clicks, reset_clicks, selected_product, selected_year_range, Region):
+def update_graph(update_clicks, reset_clicks, selected_product, selected_region, selected_years):
     ctx = dash.callback_context
 
     if not ctx.triggered:
-        button_id = None
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        raise dash.exceptions.PreventUpdate
 
-    if button_id == 'update-button':
-        filtered_df = df[(df['Category'] == selected_product) &
-                         (df['Order Date'].dt.year >= selected_year_range[0]) &
-                         (df['Order Date'].dt.year <= selected_year_range[1])]
-        if Region:
-            filtered_df = filtered_df[filtered_df['Region'] == Region]
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-        fig = px.bar(filtered_df, x='Order Date', y='Sales', title=f'Sales of Product {selected_product}', color_discrete_sequence=['red'])
-        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
+    if triggered_id == 'reset-button':
+        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
 
-        return fig
+    # Filter dataframe based on user selections
+    filtered_df = df.copy()
 
-    elif button_id == 'reset-button':
-        fig = px.bar(pd.DataFrame(columns=['Order Date', 'Sales']), x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
-        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
-        return fig
+    if selected_product:
+        filtered_df = filtered_df[filtered_df['Category'] == selected_product]
 
-    else:
-        fig = px.bar(pd.DataFrame(columns=['Order Date', 'Sales']), x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
-        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
-        return fig
+    if selected_region:
+        filtered_df = filtered_df[filtered_df['Region'] == selected_region]
+
+    if selected_years:
+        filtered_df = filtered_df[
+            (filtered_df['Order Date'].dt.year >= selected_years[0]) &
+            (filtered_df['Order Date'].dt.year <= selected_years[1])
+        ]
+
+    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+    return fig
 
 # Expose the server
 server = app.server
