@@ -70,7 +70,7 @@ def display_page(pathname):
 def welcome_page():
     return html.Div(
         [
-            html.H1("Welcome to the Student Performance Dashboard"),
+            html.H1("Welcome to the Supermart Grocery Sales Dashboard"),
             html.P("""
             This dashboard provides an analysis of student performance data.
             Use the navigation sidebar to explore different aspects of the data.
@@ -160,7 +160,7 @@ def interactive_graphs_layout():
     ])
 
 def goodbye_page():
-    share_url = "https://github.com/GrigoryanSargis/Visualization"  # Replace with your dashboard URL
+    share_url = "https://github.com/GrigoryanSargis/Visualization"  
     facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
     twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this dashboard!"
     
@@ -173,7 +173,7 @@ def goodbye_page():
     return html.Div(
         [
             html.H1("Goodbye!"),
-            html.P("Thank you for visiting the Student Performance Dashboard."),
+            html.P("Thank you for visiting the Supermart Grocery Sales Dashboard.")
             social_buttons
         ]
     )
