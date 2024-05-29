@@ -200,7 +200,7 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'reset-button':
-        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
+        return {'data': [], 'layout': {}}
 
     # Filter dataframe based on user selections
     filtered_df = df.copy()
