@@ -113,4 +113,4 @@ def add_social_buttons(figure):
     ])
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8090, debug=True)
+    app()
