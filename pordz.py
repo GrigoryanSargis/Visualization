@@ -169,7 +169,7 @@ def goodbye_page():
         html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
         html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
     ])
-    gif_url = "https://https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif"  # Replace with your desired GIF URL
+    gif_url = "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif"  # Replace with your desired GIF URL
 
     return html.Div(
         [
