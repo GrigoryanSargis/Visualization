@@ -195,8 +195,23 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
             (filtered_df['Order Date'].dt.year <= selected_years[1])
         ]
 
-    fig = px.line(filtered_df, x='Order Date', y='Sales', title='Sales Over Time')
+    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time')
     return fig
+
+# Callback for adding social media buttons
+@app.callback(
+    Output('social-buttons', 'children'),
+    [Input('sales-graph', 'figure')]
+)
+def add_social_buttons(figure):
+    share_url = "https://github.com/GrigoryanSargis/Visualization"  # Replace with your dashboard URL
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={share_url}"
+    twitter_url = f"https://twitter.com/intent/tweet?url={share_url}&text=Check out this dashboard!"
+
+    return html.Div([
+        html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
+        html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
+    ])
 
 # Expose the server
 server = app.server
