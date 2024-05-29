@@ -1,6 +1,15 @@
 import dash
 from dash import dcc, html, Input, Output
 import dash_bootstrap_components as dbc
+import plotly.express as px
+import pandas as pd
+
+# Sample DataFrame for demonstration
+data = {
+    'Region': ['East', 'West', 'South', 'North'],
+    'Sales': [2345, 5678, 1234, 4321]
+}
+df = pd.DataFrame(data)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -13,9 +22,7 @@ sidebar = dbc.Col(
             [
                 dbc.NavLink("Welcome", href="/", active="exact"),
                 dbc.NavLink("Correlation Analysis", href="/correlation-analysis", active="exact"),
-                dbc.NavLink("Grades Distribution", href="/grades-distribution", active="exact"),
-                dbc.NavLink("Pair Plots", href="/pair-plots", active="exact"),
-                dbc.NavLink("Ages and Groups Analysis", href="/ages-groups-analysis", active="exact"),
+                dbc.NavLink("Sales Distribution", href="/sales-distribution", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -50,12 +57,8 @@ app.layout = dbc.Container(
 def display_page(pathname):
     if pathname == "/correlation-analysis":
         return correlation_page()
-    elif pathname == "/grades-distribution":
-        return grades_page()
-    elif pathname == "/pair-plots":
-        return pair_plots_page()
-    elif pathname == "/ages-groups-analysis":
-        return ages_groups_page()
+    elif pathname == "/sales-distribution":
+        return sales_distribution_layout
     else:
         return welcome_page()
 
@@ -102,58 +105,15 @@ def correlation_page():
         ]
     )
 
-def grades_page():
-    return html.Div(
-        [
-            html.H1("Grades Distribution"),
-            html.P("""
-            This section provides a detailed analysis of the grades distribution across different subjects and periods.
-            We examine the distribution of grades to identify patterns and trends that can help in understanding
-            the overall performance of students.
-            """),
-            html.P("""
-            Visualizations such as histograms and box plots are used to represent the distribution of grades.
-            These visualizations help in identifying outliers, understanding the central tendency,
-            and the spread of grades among students.
-            """)
-            # Add more detailed grades distribution content here
-        ]
-    )
-
-def pair_plots_page():
-    return html.Div(
-        [
-            html.H1("Pair Plots"),
-            html.P("""
-            Pair plots are used to visualize the pairwise relationships between multiple variables in the dataset.
-            This section provides pair plots to help in identifying correlations and interactions between variables,
-            such as sales, profit, and different product categories.
-            """),
-            html.P("""
-            Pair plots are particularly useful in exploratory data analysis as they provide a comprehensive
-            view of the relationships between multiple variables, making it easier to identify trends and patterns.
-            """)
-            # Add more detailed pair plots content here
-        ]
-    )
-
-def ages_groups_page():
-    return html.Div(
-        [
-            html.H1("Ages and Groups Analysis"),
-            html.P("""
-            In this section, we analyze the data based on different age groups and other demographic factors.
-            Understanding how different groups perform can provide valuable insights into the overall trends
-            and help in targeting strategies effectively.
-            """),
-            html.P("""
-            We examine various aspects such as sales and profit across different age groups, and other demographic
-            factors to understand their impact on overall performance. This analysis helps in identifying
-            key segments and tailoring strategies accordingly.
-            """)
-            # Add more detailed ages and groups analysis content here
-        ]
-    )
+def sales_distribution_layout():
+    return dbc.Container([
+        html.H1("Sales Distribution per Region"),
+        dcc.Graph(
+            id='sales-distribution-graph',
+            figure=px.pie(df, values='Sales', names='Region', title='Sales Distribution per Region')
+        )
+    ])
 
 # Expose the server
 server = app.server
+
