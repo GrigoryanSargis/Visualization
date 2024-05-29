@@ -178,7 +178,7 @@ def update_graph(update_clicks, reset_clicks, selected_product, selected_region,
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if triggered_id == 'reset-button':
-        return px.line(df, x='Order Date', y='Sales', title='Sales Over Time')
+        return px.bar(df, x='Order Date', y='Sales', title='Sales Over Time')
 
     # Filter dataframe based on user selections
     filtered_df = df.copy()
