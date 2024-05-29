@@ -169,11 +169,13 @@ def goodbye_page():
         html.A(html.Button('Share on Facebook', id='facebook-share-button', className='btn btn-primary m-2'), href=facebook_url, target="_blank"),
         html.A(html.Button('Share on Twitter', id='twitter-share-button', className='btn btn-info m-2'), href=twitter_url, target="_blank")
     ])
+    gif_url = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"  # Replace with your desired GIF URL
 
     return html.Div(
         [
             html.H1("Goodbye!"),
-            html.P("Thank you for visiting the Supermart Grocery Sales Dashboard.")
+            html.P("Thank you for visiting the Supermart Grocery Sales."),
+            html.Img(src=gif_url, style={'width': '50%'}),
             social_buttons
         ]
     )
@@ -191,34 +193,31 @@ def goodbye_page():
         State('year-slider', 'value')
     ]
 )
-def update_graph(update_clicks, reset_clicks, selected_product, selected_region, selected_years):
+def update_graph(update_clicks, reset_clicks, selected_product, selected_year_range, Region):
     ctx = dash.callback_context
 
     if not ctx.triggered:
-        raise dash.exceptions.PreventUpdate
+        button_id = None
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    if button_id == 'update-button':
+        filtered_df = df[(df['Category'] == selected_product) &
+                         (df['Order Date'].dt.year >= selected_year_range[0]) &
+                         (df['Order Date'].dt.year <= selected_year_range[1])]
+        if Region:
+            filtered_df = filtered_df[filtered_df['Region'] == Region]
 
-    if triggered_id == 'reset-button':
+        fig = px.bar(filtered_df, x='Order Date', y='Sales', title=f'Sales of Product {selected_product}', color_discrete_sequence=['red'])
+        fig.update_layout(xaxis_title='Order Date', yaxis_title='Sales')
+
+        return fig
+
+    elif button_id == 'reset-button':
         return {'data': [], 'layout': {}}
 
-    # Filter dataframe based on user selections
-    filtered_df = df.copy()
-
-    if selected_product:
-        filtered_df = filtered_df[filtered_df['Category'] == selected_product]
-
-    if selected_region:
-        filtered_df = filtered_df[filtered_df['Region'] == selected_region]
-
-    if selected_years:
-        filtered_df = filtered_df[
-            (filtered_df['Order Date'].dt.year >= selected_years[0]) &
-            (filtered_df['Order Date'].dt.year <= selected_years[1])
-        ]
-
-    fig = px.bar(filtered_df, x='Order Date', y='Sales', title='Sales Over Time', color_discrete_sequence=['red'])
-    return fig
+    else:
+        return {'data': [], 'layout': {}}
 
 # Expose the server
 server = app.server
