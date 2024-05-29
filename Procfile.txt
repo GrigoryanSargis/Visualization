@@ -1,1 +1,1 @@
-web: gunicorn dash_with_buttoms:server
+web: gunicorn pordz:server
