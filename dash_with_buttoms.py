@@ -72,8 +72,8 @@ def welcome_page():
         [
             html.H1("Welcome to the Supermart Grocery Sales Dashboard"),
             html.P("""
-            This dashboard provides an analysis of student performance data.
-            Use the navigation sidebar to explore different aspects of the data.
+                    This dashboard provides an analysis of Supermart Grocery Sales data.
+                    Use the navigation to explore different aspects of the data.
             """),
             html.H3("Data Overview"),
             html.Ul(
